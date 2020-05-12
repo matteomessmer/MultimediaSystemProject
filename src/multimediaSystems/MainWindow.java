@@ -26,18 +26,22 @@ public class MainWindow extends JFrame {
 	private int thresholdValue = 0;
 	private int thresholdType = 3;
 	private Mat src;
-	private Mat srcGray = new Mat();
+	//private Mat srcGray = new Mat();
 	private Mat dst = new Mat();
 	private JLabel imgLabel = new JLabel();
 
-	public static String imagePath = "";
+	//public static String imagePath = "";
 	
 	public MainWindow() {
 		super(WINDOW_NAME);
-
+		
+		//uncomment for faster testing, comment when finished
+		setImage("C:\\Users\\matteo\\MultimediaSystemProject\\sample.jpg"); /*
 		do {
 			chooseImage();
 		} while( src.empty());
+		//*/	
+		
 		
 		// Create and set up the window.
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -79,6 +83,7 @@ public class MainWindow extends JFrame {
 		sliderThreshValue.setPaintTicks(true);
 		sliderThreshValue.setPaintLabels(true);
 		sliderPanel.add(sliderThreshValue);
+		
 		sliderThreshType.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
@@ -100,7 +105,7 @@ public class MainWindow extends JFrame {
 	}
 
 	private void update() {
-		Imgproc.threshold(srcGray, dst, thresholdValue, MAX_BINARY_VALUE, thresholdType);
+		//Imgproc.threshold(srcGray, dst, thresholdValue, MAX_BINARY_VALUE, thresholdType);
 		Image img = HighGui.toBufferedImage(dst);
 		imgLabel.setIcon(new ImageIcon(img));
 		repaint();
@@ -137,17 +142,36 @@ public class MainWindow extends JFrame {
 		int result = fileChooser.showOpenDialog(MainWindow.this);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fileChooser.getSelectedFile();
-			imagePath = selectedFile.getAbsolutePath();
-			src = Imgcodecs.imread(imagePath);
-
-			// Convert the image to Gray
-			Imgproc.cvtColor(src, srcGray, Imgproc.COLOR_BGR2GRAY);
-
-			// Set up the content pane.
-			Image img = HighGui.toBufferedImage(srcGray);
-
-			imgLabel.setIcon(new ImageIcon(img));
-			repaint();
+			setImage(selectedFile.getAbsolutePath());
 		}
+	}
+	
+	private void setImage(String imagePath) {
+		src = Imgcodecs.imread(imagePath);
+		Mat m = regionGrowing(src);
+		
+		// Set up the content pane.
+		Image img = HighGui.toBufferedImage(m);
+
+		imgLabel.setIcon(new ImageIcon(img));
+	}
+
+	private Mat regionGrowing(Mat src) {
+		Mat segmentedImage = new Mat(src.height(), src.width(), src.type());
+		
+		//testing pixels changes
+		for(int row=0; row<src.height(); row++) {
+			for(int col=0; col<src.width(); col++) {
+				double[] data = src.get(row, col);
+				double test =(data[0]+data[1]+data[2])/3;
+				data[0]=test;	//b
+				data[1]=test;	//g
+				data[2]=test;	//r
+				segmentedImage.put(row,col, data);
+			}	
+		}
+		
+		
+		return segmentedImage;
 	}
 }
