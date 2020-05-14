@@ -1,9 +1,9 @@
 # Multimedia System Project
 Repo for the project of the Multimedia System course @UniBZ
 
-The argument for the project is segmentation
+The topic of the project is segmentation.
 
-# Objective 
+# Objective
 Implement the Region Growing algorithm in Java.
 
 # Group
