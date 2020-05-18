@@ -12,22 +12,16 @@ import javax.swing.event.ChangeListener;
 import org.opencv.core.Mat;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 
 public class MainWindow extends JFrame {
 
-	private static int MAX_VALUE = 255;
-	private static int MAX_TYPE = 4;
-	private static int MAX_BINARY_VALUE = 255;
+	private static int MAX_VALUE = 5;
+
 	private static final String WINDOW_NAME = "Multimedia Systems - Region Growing";
-	private static final String TRACKBAR_TYPE = "<html><body>Type: <br> 0: Binary <br> "
-			+ "1: Binary Inverted <br> 2: Truncate <br> " + "3: To Zero <br> 4: To Zero Inverted</body></html>";
-	private static final String TRACKBAR_VALUE = "Value";
-	private int thresholdValue = 0;
-	private int thresholdType = 3;
+
+	private int thresholdValue = 4;
 	private Mat src;
-	//private Mat srcGray = new Mat();
-	private Mat dst = new Mat();
+	
 	private JLabel imgLabel = new JLabel();
 
 	//public static String imagePath = "";
@@ -36,7 +30,10 @@ public class MainWindow extends JFrame {
 		super(WINDOW_NAME);
 		
 		//uncomment for faster testing, comment when finished
-		setImage("C:\\Users\\matteo\\MultimediaSystemProject\\sample.jpg"); /*
+		//		"C:\\Users\\matteo\\Desktop\\test_2.jpg"
+		//"C:\\Users\\matteo\\Desktop\\pixel.png"
+		//"C:\\Users\\matteo\\Desktop\\test_3.png"
+		setImage("C:\\Users\\matteo\\Pictures\\Saved Pictures\\32_1557575936.jpeg"); /*
 		do {
 			chooseImage();
 		} while( src.empty());
@@ -67,31 +64,15 @@ public class MainWindow extends JFrame {
 		}
 		JPanel sliderPanel = new JPanel();
 		sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.PAGE_AXIS));
-		sliderPanel.add(new JLabel(TRACKBAR_TYPE));
-		// Create Trackbar to choose type of Threshold
-		JSlider sliderThreshType = new JSlider(0, MAX_TYPE, thresholdType);
-		sliderThreshType.setMajorTickSpacing(1);
-		sliderThreshType.setMinorTickSpacing(1);
-		sliderThreshType.setPaintTicks(true);
-		sliderThreshType.setPaintLabels(true);
-		sliderPanel.add(sliderThreshType);
-		sliderPanel.add(new JLabel(TRACKBAR_VALUE));
+
 		// Create Trackbar to choose Threshold value
-		JSlider sliderThreshValue = new JSlider(0, MAX_VALUE, 0);
-		sliderThreshValue.setMajorTickSpacing(50);
-		sliderThreshValue.setMinorTickSpacing(10);
+		JSlider sliderThreshValue = new JSlider(1, MAX_VALUE, thresholdValue);
+		sliderThreshValue.setMajorTickSpacing(1);
+		sliderThreshValue.setMinorTickSpacing(1);
 		sliderThreshValue.setPaintTicks(true);
 		sliderThreshValue.setPaintLabels(true);
 		sliderPanel.add(sliderThreshValue);
-		
-		sliderThreshType.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				JSlider source = (JSlider) e.getSource();
-				thresholdType = source.getValue();
-				update();
-			}
-		});
+
 		sliderThreshValue.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
@@ -106,7 +87,9 @@ public class MainWindow extends JFrame {
 
 	private void update() {
 		//Imgproc.threshold(srcGray, dst, thresholdValue, MAX_BINARY_VALUE, thresholdType);
-		Image img = HighGui.toBufferedImage(dst);
+
+		Mat m = RegionGrowing.regionGrowing(src, thresholdValue);
+		Image img = HighGui.toBufferedImage(m);
 		imgLabel.setIcon(new ImageIcon(img));
 		repaint();
 	}
@@ -148,30 +131,13 @@ public class MainWindow extends JFrame {
 	
 	private void setImage(String imagePath) {
 		src = Imgcodecs.imread(imagePath);
-		Mat m = regionGrowing(src);
-		
+		Mat m = RegionGrowing.regionGrowing(src, thresholdValue);
+		//src.put(78, 230, new double[] {0,0,255});
 		// Set up the content pane.
 		Image img = HighGui.toBufferedImage(m);
 
 		imgLabel.setIcon(new ImageIcon(img));
+
 	}
 
-	private Mat regionGrowing(Mat src) {
-		Mat segmentedImage = new Mat(src.height(), src.width(), src.type());
-		
-		//testing pixels changes
-		for(int row=0; row<src.height(); row++) {
-			for(int col=0; col<src.width(); col++) {
-				double[] data = src.get(row, col);
-				double test =(data[0]+data[1]+data[2])/3;
-				data[0]=test;	//b
-				data[1]=test;	//g
-				data[2]=test;	//r
-				segmentedImage.put(row,col, data);
-			}	
-		}
-		
-		
-		return segmentedImage;
-	}
 }
