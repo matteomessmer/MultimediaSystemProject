@@ -19,7 +19,7 @@ public class MainWindow extends JFrame {
 
 	private static final String WINDOW_NAME = "Multimedia Systems - Region Growing";
 
-	private int thresholdValue = 4;
+	private int thresholdValue = 2;
 	private Mat src;
 	
 	private JLabel imgLabel = new JLabel();
@@ -33,7 +33,8 @@ public class MainWindow extends JFrame {
 		//		"C:\\Users\\matteo\\Desktop\\test_2.jpg"
 		//"C:\\Users\\matteo\\Desktop\\pixel.png"
 		//"C:\\Users\\matteo\\Desktop\\test_3.png"
-		setImage("C:\\Users\\matteo\\Pictures\\Saved Pictures\\32_1557575936.jpeg"); /*
+		//"C:\\Users\\matteo\\Pictures\\Saved Pictures\\32_1557575936.jpeg"
+		setImage("C:\\Users\\matteo\\MultimediaSystemProject\\test_4.jpg"); /*
 		do {
 			chooseImage();
 		} while( src.empty());
@@ -88,7 +89,7 @@ public class MainWindow extends JFrame {
 	private void update() {
 		//Imgproc.threshold(srcGray, dst, thresholdValue, MAX_BINARY_VALUE, thresholdType);
 
-		Mat m = RegionGrowing.regionGrowing(src, thresholdValue);
+		Mat m = RegionGrowing.regionGrowing2(src, thresholdValue);
 		Image img = HighGui.toBufferedImage(m);
 		imgLabel.setIcon(new ImageIcon(img));
 		repaint();
@@ -131,7 +132,7 @@ public class MainWindow extends JFrame {
 	
 	private void setImage(String imagePath) {
 		src = Imgcodecs.imread(imagePath);
-		Mat m = RegionGrowing.regionGrowing(src, thresholdValue);
+		Mat m = RegionGrowing.regionGrowing2(src, thresholdValue);
 		//src.put(78, 230, new double[] {0,0,255});
 		// Set up the content pane.
 		Image img = HighGui.toBufferedImage(m);
