@@ -34,7 +34,7 @@ public class MainWindow extends JFrame {
 		//"C:\\Users\\matteo\\Desktop\\pixel.png"
 		//"C:\\Users\\matteo\\Desktop\\test_3.png"
 		//"C:\\Users\\matteo\\Pictures\\Saved Pictures\\32_1557575936.jpeg"
-		setImage("C:\\Users\\matteo\\MultimediaSystemProject\\test_4.jpg"); /*
+		//setImage("C:\\Users\\matteo\\MultimediaSystemProject\\sample.jpg"); /*
 		do {
 			chooseImage();
 		} while( src.empty());
@@ -122,11 +122,15 @@ public class MainWindow extends JFrame {
 	}
 
 	private void chooseImage() {
-		JFileChooser fileChooser = new JFileChooser();
+		String userDirLocation = System.getProperty("user.dir");
+		File userDir = new File(userDirLocation);
+		JFileChooser fileChooser = new JFileChooser(userDir);
 		int result = fileChooser.showOpenDialog(MainWindow.this);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fileChooser.getSelectedFile();
 			setImage(selectedFile.getAbsolutePath());
+		} else {
+			System.exit(1);
 		}
 	}
 	
