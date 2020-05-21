@@ -9,11 +9,17 @@ import org.opencv.core.Mat;
 
 public class RegionGrowing {
 
+	/* FIRST IMPLEMENTATION */
+
 	public static Mat regionGrowing(Mat src, int thresholdValue) {
 
+		//set threshold value taken from slider
 		thresholdValue = thresholdValue * 88;
+		//set array of pixels already visited from the algorithm
 		boolean[][] visited = new boolean[src.height()][src.width()];
+		//exit condition for the algorithm
 		boolean finish = false;
+		//output image
 		Mat segmentedImage = new Mat(src.height(), src.width(), src.type());
 
 		// find the max value (seed)
@@ -37,23 +43,25 @@ public class RegionGrowing {
 			}
 
 			if (!finish) {
-
 				// testing
 				// segmentedImage.put(maxRow, maxCol, new double[] {0,0,255});
 
 				// find region
 				ArrayList<Pixel> stack = new ArrayList<Pixel>();
 
+				//start from seed
 				Pixel seed = new Pixel(maxRow, maxCol, src.get(maxRow, maxCol));
 				stack.add(seed);
 				visited[maxRow][maxCol] = true;
 
 				while (stack.size() > 0) {
-
+					//initlilize the list of neightbours
 					ArrayList<Pixel> neighbours = new ArrayList<Pixel>();
 
+					//take first pixel of the list
 					Pixel currentPixel = stack.get(0);
 
+					//get neighbours of the current pixel
 					neighbours.add(getRightPixel(currentPixel.getRow(), currentPixel.getCol(), src));
 					neighbours.add(getLeftPixel(currentPixel.getRow(), currentPixel.getCol(), src));
 					neighbours.add(getUpPixel(currentPixel.getRow(), currentPixel.getCol(), src));
@@ -77,14 +85,13 @@ public class RegionGrowing {
 						}
 					}
 					stack.remove(0);
-
 				}
 			}
-
 		}
-
 		return segmentedImage;
 	}
+
+	/* SECOND IMPLEMENTATION */
 
 	public static Mat regionGrowing2(Mat src, int thresholdValue) {
 		thresholdValue = thresholdValue * 88;
@@ -117,7 +124,7 @@ public class RegionGrowing {
 			 * //show sorted image int i = 0; for (int row = 0; row < src.height(); row++) {
 			 * for (int col = 0; col < src.width(); col++) { segmentedImage.put(row,
 			 * col,pixels.get(i).getValue()); i++; }
-			 * 
+			 *
 			 * }
 			 */
 			/*
@@ -183,15 +190,15 @@ public class RegionGrowing {
 		/*
 		 * //find possible pixel of the region int start = 0, end = pixels.size() - 1;
 		 * int ans = -1; while (start <= end) { int mid = (start + end) / 2;
-		 * 
+		 *
 		 * // Move to right side if target is // greater. if
 		 * (pixels.get(mid).getDistanceFromBlack() <= seed.getDistanceFromBlack() +
 		 * thresholdValue) { start = mid + 1; }
-		 * 
+		 *
 		 * // Move left side. else { ans = mid; end = mid - 1; } }
-		 * 
+		 *
 		 * ArrayList<Pixel> subList = new ArrayList<Pixel>(pixels.subList(0, ans));
-		 * 
+		 *
 		 */
 
 		/*
@@ -202,19 +209,19 @@ public class RegionGrowing {
 		/*
 		 * // sort the pixels by distance from seed Collections.sort(subList, new
 		 * Comparator<Pixel>() {
-		 * 
+		 *
 		 * @Override public int compare(Pixel p1, Pixel p2) { return ((Double) Math
 		 * .sqrt(Math.pow(p1.getRow() - seed.getRow(), 2) + Math.pow(p1.getCol() -
 		 * seed.getCol(), 2))) .compareTo(Math.sqrt(Math.pow(p2.getRow() -
 		 * seed.getRow(), 2) + Math.pow(p2.getCol() - seed.getCol(), 2))); } });
-		 * 
+		 *
 		 */
 
 		/*
 		 * //testing for(int i = 0; i < subList.size(); i++) {
 		 * src.put(subList.get(i).getRow(), subList.get(i).getCol(), new double[]
 		 * {255-i/100,255-i/100,255-i/100}); }
-		 * 
+		 *
 		 * for (Pixel p : subList) { System.out.println(Math.sqrt(Math.pow(p.getRow() -
 		 * seed.getRow(), 2) + Math.pow(p.getCol() - seed.getCol(), 2))); }
 		 */
@@ -224,10 +231,10 @@ public class RegionGrowing {
 		 * Math.sqrt(Math.pow(subList.get(i).getRow() - seed.getRow(), 2) +
 		 * Math.pow(subList.get(i).getCol() - seed.getCol(), 2)); if (distance >
 		 * lastDistance + 1) { break; } lastDistance = distance;
-		 * 
+		 *
 		 * // visualize for testing segmentedImage.put(subList.get(i).getRow(),
 		 * subList.get(i).getCol(), new double[] { 255, 255, 0 });
-		 * 
+		 *
 		 * lastGood = i; }
 		 */
 

@@ -21,14 +21,14 @@ public class MainWindow extends JFrame {
 
 	private int thresholdValue = 2;
 	private Mat src;
-	
+
 	private JLabel imgLabel = new JLabel();
 
 	//public static String imagePath = "";
-	
+
 	public MainWindow() {
 		super(WINDOW_NAME);
-		
+
 		//uncomment for faster testing, comment when finished
 		//		"C:\\Users\\matteo\\Desktop\\test_2.jpg"
 		//"C:\\Users\\matteo\\Desktop\\pixel.png"
@@ -38,12 +38,10 @@ public class MainWindow extends JFrame {
 		do {
 			chooseImage();
 		} while( src.empty());
-		//*/	
-		
-		
+		//*/
+
 		// Create and set up the window.
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 		addComponentsToPane(getContentPane());
 
 		// Use the content pane's default BorderLayout. No need for
@@ -51,7 +49,6 @@ public class MainWindow extends JFrame {
 		// Display the window.
 		pack();
 		setVisible(true);
-
 	}
 
 	private void addComponentsToPane(Container pane) {
@@ -87,8 +84,6 @@ public class MainWindow extends JFrame {
 	}
 
 	private void update() {
-		//Imgproc.threshold(srcGray, dst, thresholdValue, MAX_BINARY_VALUE, thresholdType);
-
 		Mat m = RegionGrowing.regionGrowing2(src, thresholdValue);
 		Image img = HighGui.toBufferedImage(m);
 		imgLabel.setIcon(new ImageIcon(img));
@@ -98,14 +93,6 @@ public class MainWindow extends JFrame {
 	private MenuBar getMenu() {
 		MenuBar mb = new MenuBar();
 		Menu menu = new Menu("Menu");
-
-		/*
-		 * Menu submenu=new Menu("Sub Menu"); MenuItem i1=new MenuItem("Item 1");
-		 * MenuItem i2=new MenuItem("Item 2"); MenuItem i3=new MenuItem("Item 3");
-		 * MenuItem i4=new MenuItem("Item 4"); MenuItem i5=new MenuItem("Item 5");
-		 * menu.add(i1); menu.add(i2); menu.add(i3); submenu.add(i4); submenu.add(i5);
-		 * menu.add(submenu);
-		 */
 
 		MenuItem openImage = new MenuItem("Open");
 		openImage.addActionListener(new ActionListener() {
@@ -133,7 +120,7 @@ public class MainWindow extends JFrame {
 			System.exit(1);
 		}
 	}
-	
+
 	private void setImage(String imagePath) {
 		src = Imgcodecs.imread(imagePath);
 		Mat m = RegionGrowing.regionGrowing2(src, thresholdValue);
