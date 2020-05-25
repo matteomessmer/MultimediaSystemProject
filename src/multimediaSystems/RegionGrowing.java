@@ -42,9 +42,6 @@ public class RegionGrowing {
 			}
 
 			if (!finish) {
-				// testing
-				// segmentedImage.put(maxRow, maxCol, new double[] {0,0,255});
-
 				// find region
 				ArrayList<Pixel> stack = new ArrayList<Pixel>();
 
@@ -93,12 +90,16 @@ public class RegionGrowing {
 	/* SECOND IMPLEMENTATION */
 
 	public static Mat regionGrowing2(Mat src, int thresholdValue) {
+
+		//set threshold value taken from slider
 		thresholdValue = thresholdValue * 88;
+		//output image
 		Mat segmentedImage = new Mat(src.height(), src.width(), src.type());
 
+		//create arraylist for all the pixels of the image
 		ArrayList<Pixel> pixels = new ArrayList<Pixel>();
 
-		// put pixels in and array
+		// put pixels in the arraylist
 		for (int row = 0; row < src.height(); row++) {
 			for (int col = 0; col < src.width(); col++) {
 				double[] value = src.get(row, col);
@@ -114,24 +115,31 @@ public class RegionGrowing {
 			}
 		});
 
+		//exit condition for the algorithm
 		boolean finish = false;
-
+		//set array of pixels already visited from the algorithm
 		boolean[][] visited = new boolean[src.height()][src.width()];
 
+		//progress of pixels
+		/*
+		 * //show sorted image
+		 * int i = 0;
+		 * for (int row = 0; row < src.height(); row++) {
+		 * 	for (int col = 0; col < src.width(); col++) {
+		 * 	segmentedImage.put(row,col,pixels.get(i).getValue()); i++; }
+		 *
+		 * }
+		 */
+		/*
+		 * for(Pixel p : pixels) { System.out.println(p.getDistanceFromBlack()); }
+		 */
+
+		 //difference between first and second algorithm
+		// Collections.reverse(pixels);
+
 		while (!finish) {
-			/*
-			 * //show sorted image int i = 0; for (int row = 0; row < src.height(); row++) {
-			 * for (int col = 0; col < src.width(); col++) { segmentedImage.put(row,
-			 * col,pixels.get(i).getValue()); i++; }
-			 *
-			 * }
-			 */
-			/*
-			 * for(Pixel p : pixels) { System.out.println(p.getDistanceFromBlack()); }
-			 */
 
-			// Collections.reverse(pixels);
-
+			//find seed (not visited)
 			Pixel seed = null;
 			while (seed == null && pixels.size() > 0) {
 				if (visited[pixels.get(0).getRow()][pixels.get(0).getCol()]) {
@@ -153,11 +161,13 @@ public class RegionGrowing {
 				visited[seed.getRow()][seed.getCol()] = true;
 
 				while (stack.size() > 0) {
-
+					//initlilize the list of neightbours
 					ArrayList<Pixel> neighbours = new ArrayList<Pixel>();
 
+					//take first pixel of the list
 					Pixel currentPixel = stack.get(0);
 
+					//get neighbours of the current pixel
 					neighbours.add(getRightPixel(currentPixel.getRow(), currentPixel.getCol(), src));
 					neighbours.add(getLeftPixel(currentPixel.getRow(), currentPixel.getCol(), src));
 					neighbours.add(getUpPixel(currentPixel.getRow(), currentPixel.getCol(), src));
@@ -181,25 +191,11 @@ public class RegionGrowing {
 						}
 					}
 					stack.remove(0);
-
 				}
 			}
 		}
 
-		/*
-		 * //find possible pixel of the region int start = 0, end = pixels.size() - 1;
-		 * int ans = -1; while (start <= end) { int mid = (start + end) / 2;
-		 *
-		 * // Move to right side if target is // greater. if
-		 * (pixels.get(mid).getDistanceFromBlack() <= seed.getDistanceFromBlack() +
-		 * thresholdValue) { start = mid + 1; }
-		 *
-		 * // Move left side. else { ans = mid; end = mid - 1; } }
-		 *
-		 * ArrayList<Pixel> subList = new ArrayList<Pixel>(pixels.subList(0, ans));
-		 *
-		 */
-
+		//show possible region
 		/*
 		 * //testing for(int i = 0; i < subList.size(); i++) {
 		 * segmentedImage.put(subList.get(i).getRow(), subList.get(i).getCol(), new
@@ -216,31 +212,21 @@ public class RegionGrowing {
 		 *
 		 */
 
+		 //after finding seed, smooth distance of region
 		/*
-		 * //testing for(int i = 0; i < subList.size(); i++) {
+		 * //testing
+		 * for(int i = 0; i < subList.size(); i++) {
 		 * src.put(subList.get(i).getRow(), subList.get(i).getCol(), new double[]
 		 * {255-i/100,255-i/100,255-i/100}); }
 		 *
 		 * for (Pixel p : subList) { System.out.println(Math.sqrt(Math.pow(p.getRow() -
 		 * seed.getRow(), 2) + Math.pow(p.getCol() - seed.getCol(), 2))); }
 		 */
-		/*
-		 * //find neighbours double lastDistance = 0; int lastGood = 0; for (int i = 1;
-		 * i < subList.size(); i++) { double distance =
-		 * Math.sqrt(Math.pow(subList.get(i).getRow() - seed.getRow(), 2) +
-		 * Math.pow(subList.get(i).getCol() - seed.getCol(), 2)); if (distance >
-		 * lastDistance + 1) { break; } lastDistance = distance;
-		 *
-		 * // visualize for testing segmentedImage.put(subList.get(i).getRow(),
-		 * subList.get(i).getCol(), new double[] { 255, 255, 0 });
-		 *
-		 * lastGood = i; }
-		 */
 
 		return segmentedImage;
-
 	}
 
+	//get pixel on the right of the seed
 	private static Pixel getRightPixel(int r, int c, Mat src) {
 		if (src.width() <= c + 1) {
 			return null;
@@ -248,6 +234,7 @@ public class RegionGrowing {
 		return new Pixel(r, c + 1, src.get(r, c + 1));
 	}
 
+	//get pixel on the left of the seed
 	private static Pixel getLeftPixel(int r, int c, Mat src) {
 		if (c - 1 < 0) {
 			return null;
@@ -255,6 +242,7 @@ public class RegionGrowing {
 		return new Pixel(r, c - 1, src.get(r, c - 1));
 	}
 
+	//get pixel on top of the seed
 	private static Pixel getUpPixel(int r, int c, Mat src) {
 		if (r - 1 < 0) {
 			return null;
@@ -262,6 +250,7 @@ public class RegionGrowing {
 		return new Pixel(r - 1, c, src.get(r - 1, c));
 	}
 
+	//get pixel on the bottom of the seed
 	private static Pixel getDownPixel(int r, int c, Mat src) {
 		if (src.height() <= r + 1) {
 			return null;
@@ -269,6 +258,7 @@ public class RegionGrowing {
 		return new Pixel(r + 1, c, src.get(r + 1, c));
 	}
 
+	//get pixel on the right top of the seed
 	private static Pixel getUpRightPixel(int r, int c, Mat src) {
 		if (src.width() <= c + 1 || r - 1 < 0) {
 			return null;
@@ -276,6 +266,7 @@ public class RegionGrowing {
 		return new Pixel(r - 1, c + 1, src.get(r - 1, c + 1));
 	}
 
+	//get pixel on the right bottom of the seed
 	private static Pixel getDownRightPixel(int r, int c, Mat src) {
 		if (src.height() <= r + 1 || src.width() <= c + 1) {
 			return null;
@@ -283,6 +274,7 @@ public class RegionGrowing {
 		return new Pixel(r + 1, c + 1, src.get(r + 1, c + 1));
 	}
 
+	//get pixel on the left top of the seed
 	private static Pixel getUpLeftPixel(int r, int c, Mat src) {
 		if (r - 1 < 0 || c - 1 < 0) {
 			return null;
@@ -290,11 +282,11 @@ public class RegionGrowing {
 		return new Pixel(r - 1, c - 1, src.get(r - 1, c - 1));
 	}
 
+	//get pixel on the left bottom of the seed
 	private static Pixel getDownLeftPixel(int r, int c, Mat src) {
 		if (src.height() <= r + 1 || c - 1 < 0) {
 			return null;
 		}
 		return new Pixel(r + 1, c - 1, src.get(r + 1, c - 1));
 	}
-
 }

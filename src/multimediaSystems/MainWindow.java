@@ -24,17 +24,11 @@ public class MainWindow extends JFrame {
 
 	private JLabel imgLabel = new JLabel();
 
-	//public static String imagePath = "";
-
 	public MainWindow() {
 		super(WINDOW_NAME);
 
 		//uncomment for faster testing, comment when finished
-		//		"C:\\Users\\matteo\\Desktop\\test_2.jpg"
-		//"C:\\Users\\matteo\\Desktop\\pixel.png"
-		//"C:\\Users\\matteo\\Desktop\\test_3.png"
-		//"C:\\Users\\matteo\\Pictures\\Saved Pictures\\32_1557575936.jpeg"
-		//setImage("C:\\Users\\matteo\\MultimediaSystemProject\\sample.jpg"); /*
+		//setImage("test_1.jpg"); /*
 		do {
 			chooseImage();
 		} while( src.empty());
@@ -124,12 +118,8 @@ public class MainWindow extends JFrame {
 	private void setImage(String imagePath) {
 		src = Imgcodecs.imread(imagePath);
 		Mat m = RegionGrowing.regionGrowing2(src, thresholdValue);
-		//src.put(78, 230, new double[] {0,0,255});
 		// Set up the content pane.
 		Image img = HighGui.toBufferedImage(m);
-
 		imgLabel.setIcon(new ImageIcon(img));
-
 	}
-
 }
