@@ -9,10 +9,13 @@ import org.opencv.imgproc.Imgproc;
 
 public class RegionGrowing {
 
+	public static int regions = 0;
+	
 	/* FIRST IMPLEMENTATION */
 
 	public static Mat regionGrowing(Mat src, int thresholdValue) {
-
+		regions = 0;
+		
 		// set threshold value taken from slider
 		// set array of pixels already visited from the algorithm
 		boolean[][] visited = new boolean[src.height()][src.width()];
@@ -47,6 +50,8 @@ public class RegionGrowing {
 
 				// start from seed
 				Pixel seed = new Pixel(maxRow, maxCol, src.get(maxRow, maxCol));
+				regions++;
+				
 				stack.add(seed);
 				visited[maxRow][maxCol] = true;
 
@@ -90,7 +95,8 @@ public class RegionGrowing {
 	/* SECOND IMPLEMENTATION */
 
 	public static Mat regionGrowing2(Mat src, int thresholdValue) {
-
+		regions = 0;
+		
 		// set threshold value taken from slider
 		// output image
 		Mat segmentedImage = new Mat(src.height(), src.width(), src.type());
@@ -143,6 +149,7 @@ public class RegionGrowing {
 					pixels.remove(0);
 				} else {
 					seed = pixels.get(0);
+					regions++;
 					break;
 				}
 			}
@@ -221,9 +228,12 @@ public class RegionGrowing {
 
 		return segmentedImage;
 	}
-
+	
+	/* SECOND IMPLEMENTATION VARIANT (DESCENDENT ORDERING) */
+	
 	public static Mat regionGrowing2Var(Mat src, int thresholdValue) {
-
+		regions =0;
+		
 		// set threshold value taken from slider
 		// output image
 		Mat segmentedImage = new Mat(src.height(), src.width(), src.type());
@@ -246,7 +256,7 @@ public class RegionGrowing {
 				return ((Double) p2.getDistanceFromBlack()).compareTo(p1.getDistanceFromBlack());
 			}
 		});
-
+		
 		// exit condition for the algorithm
 		boolean finish = false;
 		// set array of pixels already visited from the algorithm
@@ -276,6 +286,7 @@ public class RegionGrowing {
 					pixels.remove(0);
 				} else {
 					seed = pixels.get(0);
+					regions++;
 					break;
 				}
 			}
@@ -291,7 +302,7 @@ public class RegionGrowing {
 				visited[seed.getRow()][seed.getCol()] = true;
 
 				while (stack.size() > 0) {
-					// initlilize the list of neightbours
+					// initialize the list of neightbours
 					ArrayList<Pixel> neighbours = new ArrayList<Pixel>();
 
 					// take first pixel of the list

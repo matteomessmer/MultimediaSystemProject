@@ -13,7 +13,7 @@ import javax.swing.event.ChangeListener;
 import org.opencv.core.Mat;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
+import org.opencv.photo.Photo;
 
 public class MainWindow extends JFrame {
 
@@ -23,10 +23,16 @@ public class MainWindow extends JFrame {
 
 	private int thresholdValue = MAX_VALUE;
 	private Mat src;
-	ButtonGroup bgroup = new ButtonGroup();
+	
 	ArrayList<JRadioButton> algorithmButtons;
+	JCheckBox denoiseCheck;
+	
+	private static int denoiseHMaxValue = 100;
+	private int denoiseHValue = 10;
+	
 	JLabel time = new JLabel();
-
+	JLabel regions = new JLabel();
+	
 	
 	private JLabel imgLabel = new JLabel();
 
@@ -84,15 +90,19 @@ public class MainWindow extends JFrame {
 		radioPanel.add(alg3Button);
 		radioPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Algorithm"));
 
-		JPanel sliderPanel = new JPanel();
-		sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.PAGE_AXIS));
-
+		
+		denoiseCheck = new JCheckBox("Denoise");
+		
 		// Create Trackbar to choose Threshold value
 		JSlider sliderThreshValue = new JSlider(1, MAX_VALUE, thresholdValue);
 		sliderThreshValue.setMajorTickSpacing(50);
 		sliderThreshValue.setMinorTickSpacing(10);
 		sliderThreshValue.setPaintTicks(true);
 		sliderThreshValue.setPaintLabels(true);
+
+		JPanel sliderPanel = new JPanel();
+		sliderPanel.setLayout(new GridLayout(2,1));
+		sliderPanel.add(new JLabel("Threshold"));
 		sliderPanel.add(sliderThreshValue);
 
 		sliderThreshValue.addChangeListener(new ChangeListener() {
@@ -105,12 +115,47 @@ public class MainWindow extends JFrame {
 				}
 			}
 		});
+		
 
+		JPanel denoiseHSliderPanel = new JPanel();
+		denoiseHSliderPanel.setLayout(new BoxLayout(denoiseHSliderPanel, BoxLayout.PAGE_AXIS));
+
+		// Create Trackbar to choose Threshold value
+		JSlider denoiseSliderValue = new JSlider(1, denoiseHMaxValue, denoiseHValue);
+		denoiseSliderValue.setMajorTickSpacing(50);
+		denoiseSliderValue.setMinorTickSpacing(10);
+		denoiseSliderValue.setPaintTicks(true);
+		denoiseSliderValue.setPaintLabels(true);
+		denoiseHSliderPanel.add(denoiseSliderValue);
+
+		denoiseSliderValue.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JSlider source = (JSlider) e.getSource();
+				denoiseHValue = source.getValue();
+				if (!denoiseSliderValue.getValueIsAdjusting()) {
+					if(denoiseCheck.isSelected()) {
+						update();
+					}
+				}
+			}
+		});
+
+		JPanel denoisePanel = new JPanel(new GridLayout(3,1));
+		denoisePanel.add(denoiseCheck);
+		denoisePanel.add(denoiseHSliderPanel);
+
+		JPanel resultsPanel = new JPanel();
+		resultsPanel.setLayout(new GridLayout(2,1));
+		
+		resultsPanel.add(time);
+		resultsPanel.add(regions);
 
 		JPanel algTopPanel = new JPanel();
-		algTopPanel.setLayout(new GridLayout(1, 2));
+		algTopPanel.setLayout(new GridLayout(1, 3));
 		algTopPanel.add(radioPanel);
-		algTopPanel.add(time);
+		algTopPanel.add(denoisePanel);
+		algTopPanel.add(resultsPanel);
 		
 		JPanel algorithmPanel = new JPanel();
 		algorithmPanel.setLayout(new GridLayout(2,1));
@@ -163,6 +208,14 @@ public class MainWindow extends JFrame {
 	}
 
 	private void computeRegionGrowing() {
+		Mat source = new Mat();
+		
+		if(denoiseCheck.isSelected()) {
+			Photo.fastNlMeansDenoisingColored(src,source,denoiseHValue,10);
+		} else {
+			source = src;
+		}
+		
 		String algorithm = "";
 		for (int i = 0; i < algorithmButtons.size(); i++) {
 			if (algorithmButtons.get(i).isSelected()) {
@@ -174,18 +227,18 @@ public class MainWindow extends JFrame {
 		Mat m = null;
 		switch (algorithm) {
 		case "Algorithm 1":
-			m = RegionGrowing.regionGrowing(src, thresholdValue);
+			m = RegionGrowing.regionGrowing(source, thresholdValue);
 			break;
 		case "Algorithm 2":
-			m = RegionGrowing.regionGrowing2(src, thresholdValue);
+			m = RegionGrowing.regionGrowing2(source, thresholdValue);
 			break;
 		case "Algorithm 2 Var":
-			m = RegionGrowing.regionGrowing2Var(src, thresholdValue);
+			m = RegionGrowing.regionGrowing2Var(source, thresholdValue);
 			break;
 		}
 
-		time.setText("Total time: " + (System.currentTimeMillis() - start));
-
+		regions.setText("Number of regions: " + RegionGrowing.regions);
+		time.setText("Total time: " + ((double)(System.currentTimeMillis() - start)/1000.0) + " seconds");
 
 		// Set up the content pane.
 		Image img = HighGui.toBufferedImage(m);
