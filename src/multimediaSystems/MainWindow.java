@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -12,32 +13,38 @@ import javax.swing.event.ChangeListener;
 import org.opencv.core.Mat;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 public class MainWindow extends JFrame {
 
-	private static int MAX_VALUE = 5;
+	private static int MAX_VALUE = 441;
 
 	private static final String WINDOW_NAME = "Multimedia Systems - Region Growing";
 
-	private int thresholdValue = 2;
+	private int thresholdValue = MAX_VALUE;
 	private Mat src;
+	ButtonGroup bgroup = new ButtonGroup();
+	ArrayList<JRadioButton> algorithmButtons;
+	JLabel time = new JLabel();
 
+	
 	private JLabel imgLabel = new JLabel();
 
 	public MainWindow() {
 		super(WINDOW_NAME);
 
-		//uncomment for faster testing, comment when finished
-		//setImage("test_1.jpg"); /*
-		do {
-			chooseImage();
-		} while( src.empty());
-		//*/
-
 		// Create and set up the window.
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		addComponentsToPane(getContentPane());
-
+		
+		// uncomment for faster testing, comment when finished
+		// setImage("test_1.jpg"); /*
+		do {
+			chooseImage();
+		} while (src.empty());
+		// */
+		
+		
 		// Use the content pane's default BorderLayout. No need for
 		// setLayout(new BorderLayout());
 		// Display the window.
@@ -46,21 +53,44 @@ public class MainWindow extends JFrame {
 	}
 
 	private void addComponentsToPane(Container pane) {
-
-		MenuBar menu = getMenu();
-		setMenuBar(menu);
-
 		if (!(pane.getLayout() instanceof BorderLayout)) {
 			pane.add(new JLabel("Container doesn't use BorderLayout!"));
 			return;
 		}
+
+		// Menu
+		MenuBar menu = getMenu();
+		setMenuBar(menu);
+
+		// Algorithm radio buttons
+		JRadioButton alg1Button = new JRadioButton("Algorithm 1",true);
+		JRadioButton alg2Button = new JRadioButton("Algorithm 2");
+		JRadioButton alg3Button = new JRadioButton("Algorithm 2 Var");
+
+		algorithmButtons = new ArrayList<JRadioButton>();
+		algorithmButtons.add(alg1Button);
+		algorithmButtons.add(alg2Button);
+		algorithmButtons.add(alg3Button);
+
+		ButtonGroup bgroup = new ButtonGroup();
+		bgroup.add(alg1Button);
+		bgroup.add(alg2Button);
+		bgroup.add(alg3Button);
+
+		JPanel radioPanel = new JPanel();
+		radioPanel.setLayout(new GridLayout(3, 1));
+		radioPanel.add(alg1Button);
+		radioPanel.add(alg2Button);
+		radioPanel.add(alg3Button);
+		radioPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Algorithm"));
+
 		JPanel sliderPanel = new JPanel();
 		sliderPanel.setLayout(new BoxLayout(sliderPanel, BoxLayout.PAGE_AXIS));
 
 		// Create Trackbar to choose Threshold value
 		JSlider sliderThreshValue = new JSlider(1, MAX_VALUE, thresholdValue);
-		sliderThreshValue.setMajorTickSpacing(1);
-		sliderThreshValue.setMinorTickSpacing(1);
+		sliderThreshValue.setMajorTickSpacing(50);
+		sliderThreshValue.setMinorTickSpacing(10);
 		sliderThreshValue.setPaintTicks(true);
 		sliderThreshValue.setPaintLabels(true);
 		sliderPanel.add(sliderThreshValue);
@@ -70,17 +100,29 @@ public class MainWindow extends JFrame {
 			public void stateChanged(ChangeEvent e) {
 				JSlider source = (JSlider) e.getSource();
 				thresholdValue = source.getValue();
-				update();
+				if (!sliderThreshValue.getValueIsAdjusting()) {
+					update();
+				}
 			}
 		});
-		pane.add(sliderPanel, BorderLayout.PAGE_START);
+
+
+		JPanel algTopPanel = new JPanel();
+		algTopPanel.setLayout(new GridLayout(1, 2));
+		algTopPanel.add(radioPanel);
+		algTopPanel.add(time);
+		
+		JPanel algorithmPanel = new JPanel();
+		algorithmPanel.setLayout(new GridLayout(2,1));
+		algorithmPanel.add(algTopPanel);
+		algorithmPanel.add(sliderPanel);
+		
+		pane.add(algorithmPanel, BorderLayout.PAGE_START);
 		pane.add(imgLabel, BorderLayout.CENTER);
 	}
 
 	private void update() {
-		Mat m = RegionGrowing.regionGrowing2(src, thresholdValue);
-		Image img = HighGui.toBufferedImage(m);
-		imgLabel.setIcon(new ImageIcon(img));
+		computeRegionGrowing();
 		repaint();
 	}
 
@@ -117,9 +159,38 @@ public class MainWindow extends JFrame {
 
 	private void setImage(String imagePath) {
 		src = Imgcodecs.imread(imagePath);
-		Mat m = RegionGrowing.regionGrowing2(src, thresholdValue);
+		computeRegionGrowing();
+	}
+
+	private void computeRegionGrowing() {
+		String algorithm = "";
+		for (int i = 0; i < algorithmButtons.size(); i++) {
+			if (algorithmButtons.get(i).isSelected()) {
+				algorithm = algorithmButtons.get(i).getText();
+			}
+		}
+		
+		long start = System.currentTimeMillis();
+		Mat m = null;
+		switch (algorithm) {
+		case "Algorithm 1":
+			m = RegionGrowing.regionGrowing(src, thresholdValue);
+			break;
+		case "Algorithm 2":
+			m = RegionGrowing.regionGrowing2(src, thresholdValue);
+			break;
+		case "Algorithm 2 Var":
+			m = RegionGrowing.regionGrowing2Var(src, thresholdValue);
+			break;
+		}
+
+		time.setText("Total time: " + (System.currentTimeMillis() - start));
+
+
 		// Set up the content pane.
 		Image img = HighGui.toBufferedImage(m);
 		imgLabel.setIcon(new ImageIcon(img));
+		imgLabel.setHorizontalAlignment( SwingConstants.CENTER);
+		imgLabel.setVerticalAlignment(SwingConstants.TOP);
 	}
 }
