@@ -11,7 +11,7 @@ Implement the Region Growing algorithm in Java.
 - Matteo Messmer
 - Neli Mujic
 
-![Alt Text](https://github.com/matteomessmer/MultimediaSystemProject/Test Results/test_1_alg1.gif)
+![Alt Text](https://github.com/matteomessmer/MultimediaSystemProject/Test%20Results/test_1_alg1.gif)
 
 
 #Acknowledgments
