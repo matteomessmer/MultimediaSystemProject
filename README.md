@@ -10,3 +10,11 @@ Implement the Region Growing algorithm in Java.
 - Chiara Mistrorigo
 - Matteo Messmer
 - Neli Mujic
+
+![Alt Text](https://github.com/matteomessmer/MultimediaSystemProject/Test Results/test_1_alg1.gif)
+
+
+#Acknowledgments
+To generate the gifs from the images we used https://github.com/joszko/gif_maker/
+
+We do not own the test images 
