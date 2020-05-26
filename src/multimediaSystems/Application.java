@@ -4,6 +4,8 @@ import javax.swing.SwingUtilities;
 
 import org.opencv.core.Core;
 
+import test.TestingAutomation;
+
 public class Application {
 
 	public static void main(String[] args) {

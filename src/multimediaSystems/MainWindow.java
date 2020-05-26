@@ -27,8 +27,11 @@ public class MainWindow extends JFrame {
 	ArrayList<JRadioButton> algorithmButtons;
 	JCheckBox denoiseCheck;
 	
-	private static int denoiseHMaxValue = 100;
+	private static int denoiseHMaxValue = 50;
 	private int denoiseHValue = 10;
+
+	private static int denoiseColorMaxValue = 50;
+	private int denoiseColorValue = 10;
 	
 	JLabel time = new JLabel();
 	JLabel regions = new JLabel();
@@ -121,19 +124,41 @@ public class MainWindow extends JFrame {
 		denoiseHSliderPanel.setLayout(new BoxLayout(denoiseHSliderPanel, BoxLayout.PAGE_AXIS));
 
 		// Create Trackbar to choose Threshold value
-		JSlider denoiseSliderValue = new JSlider(1, denoiseHMaxValue, denoiseHValue);
-		denoiseSliderValue.setMajorTickSpacing(50);
-		denoiseSliderValue.setMinorTickSpacing(10);
-		denoiseSliderValue.setPaintTicks(true);
-		denoiseSliderValue.setPaintLabels(true);
-		denoiseHSliderPanel.add(denoiseSliderValue);
+		JSlider denoiseHSliderValue = new JSlider(1, denoiseHMaxValue, denoiseHValue);
+		denoiseHSliderValue.setMajorTickSpacing(10);
+		denoiseHSliderValue.setMinorTickSpacing(10);
+		denoiseHSliderValue.setPaintTicks(true);
+		denoiseHSliderValue.setPaintLabels(true);
+		denoiseHSliderPanel.add(denoiseHSliderValue);
 
-		denoiseSliderValue.addChangeListener(new ChangeListener() {
+		denoiseHSliderValue.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
 				JSlider source = (JSlider) e.getSource();
 				denoiseHValue = source.getValue();
-				if (!denoiseSliderValue.getValueIsAdjusting()) {
+				if (!denoiseHSliderValue.getValueIsAdjusting()) {
+					if(denoiseCheck.isSelected()) {
+						update();
+					}
+				}
+			}
+		});
+		
+
+		// Create Trackbar to choose Threshold value
+		JSlider denoiseColorSliderValue = new JSlider(1, denoiseColorMaxValue, denoiseColorValue);
+		denoiseColorSliderValue.setMajorTickSpacing(10);
+		denoiseColorSliderValue.setMinorTickSpacing(10);
+		denoiseColorSliderValue.setPaintTicks(true);
+		denoiseColorSliderValue.setPaintLabels(true);
+		denoiseHSliderPanel.add(denoiseColorSliderValue);
+
+		denoiseColorSliderValue.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				JSlider source = (JSlider) e.getSource();
+				denoiseColorValue = source.getValue();
+				if (!denoiseColorSliderValue.getValueIsAdjusting()) {
 					if(denoiseCheck.isSelected()) {
 						update();
 					}
@@ -141,7 +166,7 @@ public class MainWindow extends JFrame {
 			}
 		});
 
-		JPanel denoisePanel = new JPanel(new GridLayout(3,1));
+		JPanel denoisePanel = new JPanel();
 		denoisePanel.add(denoiseCheck);
 		denoisePanel.add(denoiseHSliderPanel);
 
@@ -211,7 +236,7 @@ public class MainWindow extends JFrame {
 		Mat source = new Mat();
 		
 		if(denoiseCheck.isSelected()) {
-			Photo.fastNlMeansDenoisingColored(src,source,denoiseHValue,10);
+			Photo.fastNlMeansDenoisingColored(src,source,denoiseHValue,denoiseColorValue);
 		} else {
 			source = src;
 		}
