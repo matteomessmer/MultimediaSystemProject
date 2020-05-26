@@ -1,7 +1,7 @@
 # Multimedia System Project
 Repo for the project of the Multimedia System course @UniBZ
 
-The topic of the project is segmentation.
+The topic of the project is image segmentation, in particular how the Region Growing algorithm works.
 
 ![Alt Text](https://github.com/matteomessmer/MultimediaSystemProject/blob/master/Test%20Results/test_1_alg1.gif)
 
