@@ -2,14 +2,8 @@ from os import listdir
 from os.path import isfile, join
 import re
 
-paths = ['C:/Users/matteo/MultimediaSystemProject/output/denoise_on/regionGrowing1/test_1_jpg',
-'C:/Users/matteo/MultimediaSystemProject/output/denoise_on/regionGrowing1/test_2_jpg',
-'C:/Users/matteo/MultimediaSystemProject/output/denoise_on/regionGrowing1/test_3_png',
-'C:/Users/matteo/MultimediaSystemProject/output/denoise_on/regionGrowing1/test_4_jpg',
-'C:/Users/matteo/MultimediaSystemProject/output/denoise_on/regionGrowing2/test_1_jpg',
-'C:/Users/matteo/MultimediaSystemProject/output/denoise_on/regionGrowing2/test_2_jpg',
-'C:/Users/matteo/MultimediaSystemProject/output/denoise_on/regionGrowing2/test_3_png',
-'C:/Users/matteo/MultimediaSystemProject/output/denoise_on/regionGrowing2/test_4_jpg'
+paths = [
+'C:/Users/matteo/MultimediaSystemProject/output/denoise_on/regionGrowing2/test_noise_jpg'
 ]
 
 
